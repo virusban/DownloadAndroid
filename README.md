@@ -1,8 +1,9 @@
 # yt-dlp Flutter Android
 
 An Android (11+) Flutter application that allows downloading audio and video from YouTube  
-using **yt-dlp** and converting media formats with **ffmpeg** — fully offline, with all  
-required binaries bundled directly inside the APK.
+using **youtube_explode_dart** (no yt-dlp binary) and converting media formats with  
+**FFmpeg Kit** (**ffmpeg_kit_flutter_new**, no ffmpeg binary) — uses Dart packages and  
+FFmpeg Kit’s native libraries.
 
 > ⚠️ This project is intended **for educational and personal use only**.
 
@@ -10,12 +11,12 @@ required binaries bundled directly inside the APK.
 
 ## Overview
 
-This project demonstrates how a Flutter application can execute native command-line tools  
-(`yt-dlp` and `ffmpeg`) directly on an Android device without relying on any external server,  
-cloud service, or third-party application such as Termux.
+This project uses **youtube_explode_dart** to resolve YouTube streams and metadata and  
+**ffmpeg_kit_flutter_new** (FFmpeg Kit) for conversion and metadata embedding. No external  
+server, cloud, or Termux is required.
 
 The app provides a simple single-screen interface where a user can paste a YouTube link,  
-choose an output format, and download or convert media files directly on the device.
+choose an output format, and download or convert media files on the device.
 
 ---
 
@@ -38,8 +39,8 @@ choose an output format, and download or convert media files directly on the dev
   - MKV
 
 ### General
-- yt-dlp and ffmpeg binaries bundled inside the APK
-- Fully offline processing
+- youtube_explode_dart for YouTube; FFmpeg Kit for conversion (no yt-dlp/ffmpeg binaries)
+- Processing on device
 - No backend server
 - No Termux dependency
 - Single-screen UI
@@ -50,9 +51,9 @@ choose an output format, and download or convert media files directly on the dev
 
 ## Architecture
 
-The Flutter application launches `yt-dlp` and `ffmpeg` as external processes using  
-Dart's `Process.run` / `Process.start`, captures their output, and displays progress  
-and errors in the UI.
+The Flutter application uses **youtube_explode_dart** to get stream URLs and metadata,  
+downloads the stream(s) with Dart, then uses **FFmpeg Kit** (ffmpeg_kit_flutter_new) to  
+convert and embed metadata. Progress and errors are shown in the UI.
 
 ---
 
