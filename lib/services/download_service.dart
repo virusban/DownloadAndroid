@@ -19,12 +19,37 @@ class DownloadService {
   }
 
   Future<String> _getTempDir() async {
-    final dir = await getTemporaryDirectory();
-    return dir.path;
+    try {
+      final dir = await getTemporaryDirectory();
+      return dir.path;
+    } catch (e) {
+      // Fallback: use application support directory's cache
+      try {
+        final dir = await getApplicationSupportDirectory();
+        final cacheDir = Directory('${dir.path}/cache');
+        if (!await cacheDir.exists()) await cacheDir.create(recursive: true);
+        return cacheDir.path;
+      } catch (e2) {
+        // Last resort: current directory
+        return Directory.current.path;
+      }
+    }
   }
 
   Future<String> _getOutputDir() async {
-    final dir = await getApplicationDocumentsDirectory();
+    Directory dir;
+    try {
+      // Try application support directory first (more reliable on Android)
+      dir = await getApplicationSupportDirectory();
+    } catch (e) {
+      try {
+        // Fallback to documents directory
+        dir = await getApplicationDocumentsDirectory();
+      } catch (e2) {
+        // Last resort: use temp directory
+        dir = await getTemporaryDirectory();
+      }
+    }
     final downloads = Directory('${dir.path}/Downloads');
     if (!await downloads.exists()) await downloads.create(recursive: true);
     return downloads.path;
@@ -49,8 +74,17 @@ class DownloadService {
     onLog?.call('Getting stream manifest...');
     final manifest = await _yt.videos.streamsClient.getManifest(videoId);
 
-    final outDir = await _getOutputDir();
-    final tempDir = await _getTempDir();
+    onLog?.call('Preparing directories...');
+    String outDir;
+    String tempDir;
+    try {
+      outDir = await _getOutputDir();
+      tempDir = await _getTempDir();
+      onLog?.call('Output: $outDir');
+    } catch (e) {
+      onLog?.call('Directory error: $e');
+      rethrow;
+    }
 
     if (format == OutputFormat.mp4 || format == OutputFormat.mkv) {
       await _downloadVideo(
