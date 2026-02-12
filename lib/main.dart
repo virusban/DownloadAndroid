@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'services/download_service.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -40,26 +38,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
   bool _isLoading = false;
   double _progress = 0;
   final List<String> _logs = [];
-
-  @override
-  void initState() {
-    super.initState();
-    // Quick self-test: helps confirm platform channels (path_provider) are alive.
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        final tmp = await getTemporaryDirectory();
-        _log('path_provider tmp: ${tmp.path}');
-      } catch (e) {
-        _log('path_provider tmp ERROR: $e');
-      }
-      try {
-        final sup = await getApplicationSupportDirectory();
-        _log('path_provider support: ${sup.path}');
-      } catch (e) {
-        _log('path_provider support ERROR: $e');
-      }
-    });
-  }
 
   @override
   void dispose() {
